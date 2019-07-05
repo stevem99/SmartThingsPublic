@@ -325,7 +325,7 @@ def refresh() {
 	if (getDataValue("MSR") == null) {
 		cmds << zwave.manufacturerSpecificV1.manufacturerSpecificGet().format()
 	}
-	delayBetween(cmds,500)
+	delayBetween(cmds,650)
 }
 
 def on() {
