@@ -30,8 +30,8 @@
  *   Button Mappings:
  *
  *   ACTION          BUTTON#    BUTTON ACTION
- *   Double-Tap Up     1        up_2x
- *   Double-Tap Down   1        down_2x
+ *   Double-Tap Up     1        pressed
+ *   Double-Tap Down   2        pressed
  *
  */
 metadata {
@@ -165,10 +165,10 @@ def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicSet cmd) {
     log.debug "---BASIC SET V1--- ${device.displayName} sent ${cmd}"
 	if (cmd.value == 255) {
-    	createEvent(name: "button", value: "up_2x", data: [buttonNumber: 1], descriptionText: "Double-tap up (button 1) on $device.displayName", isStateChange: true, type: "physical")
+    	createEvent(name: "button", value: "pressed", data: [buttonNumber: 1], descriptionText: "Double-tap up (button 1) on $device.displayName", isStateChange: true, type: "physical")
     }
 	else if (cmd.value == 0) {
-    	createEvent(name: "button", value: "down_2x", data: [buttonNumber: 1], descriptionText: "Double-tap down (button 1) on $device.displayName", isStateChange: true, type: "physical")
+    	createEvent(name: "button", value: "pressed", data: [buttonNumber: 2], descriptionText: "Double-tap down (button 2) on $device.displayName", isStateChange: true, type: "physical")
     }
 }
 
@@ -176,7 +176,7 @@ def zwaveEvent(physicalgraph.zwave.commands.associationv2.AssociationReport cmd)
 	log.debug "---ASSOCIATION REPORT V2--- ${device.displayName} sent groupingIdentifier: ${cmd.groupingIdentifier} maxNodesSupported: ${cmd.maxNodesSupported} nodeId: ${cmd.nodeId} reportsToFollow: ${cmd.reportsToFollow}"
     if (cmd.groupingIdentifier == 3) {
     	if (cmd.nodeId.contains(zwaveHubNodeId)) {
-        	createEvent(name: "numberOfButtons", value: 1, displayed: false)
+        	createEvent(name: "numberOfButtons", value: 2, displayed: false)
         }
         else {
 			sendHubCommand(new physicalgraph.device.HubAction(zwave.associationV2.associationSet(groupingIdentifier: 3, nodeId: zwaveHubNodeId).format()))
@@ -300,11 +300,11 @@ def notInverted() {
 }
 
 def doubleUp() {
-	sendEvent(name: "button", value: "up_2x", data: [buttonNumber: 1], descriptionText: "Double-tap up (button 1) on $device.displayName", isStateChange: true, type: "digital")
+	sendEvent(name: "button", value: "pressed", data: [buttonNumber: 1], descriptionText: "Double-tap up (button 1) on $device.displayName", isStateChange: true, type: "digital")
 }
 
 def doubleDown() {
-	sendEvent(name: "button", value: "down_2x", data: [buttonNumber: 1], descriptionText: "Double-tap down (button 1) on $device.displayName", isStateChange: true, type: "digital")
+	sendEvent(name: "button", value: "pressed", data: [buttonNumber: 2], descriptionText: "Double-tap down (button 2) on $device.displayName", isStateChange: true, type: "digital")
 }
 
 def poll() {
@@ -313,7 +313,7 @@ def poll() {
 	if (getDataValue("MSR") == null) {
 		cmds << zwave.manufacturerSpecificV1.manufacturerSpecificGet().format()
 	}
-	delayBetween(cmds,500)
+	delayBetween(cmds,650)
 }
 
 def refresh() {
@@ -325,7 +325,7 @@ def refresh() {
 	if (getDataValue("MSR") == null) {
 		cmds << zwave.manufacturerSpecificV1.manufacturerSpecificGet().format()
 	}
-	delayBetween(cmds,500)
+	delayBetween(cmds,650)
 }
 
 def on() {
